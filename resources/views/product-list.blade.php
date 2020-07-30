@@ -29,7 +29,7 @@
 
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Add product : </div>
+                <div class="card-header"><h3>Add product : </h3></div>
                 <div class="alert alert-success" style="display:none">
                     <p></p>
                 </div>
@@ -46,7 +46,7 @@
                                </div>
                         
                         <div class="form-group">
-                            <label for="image"><strong>Add Media:</strong></label>
+                            <label for="image"><strong>Add Images:</strong></label>
                             <input type="file" class="form-control" id="image-upload" placeholder="Post Image" name="image_upload[]" required multiple>
                         </div>
                         <button type="button" class="btn btn-primary">Submit</button>
@@ -66,12 +66,14 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                  <h4 class="modal-title" id="myModalLabel">Update Data</h4>
+                        <table id="productUpdate" class="table">
 
+                        </table>
             </div>
             <div class="modal-body">...</div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-primary" id="updateProduct">Update</button>
             </div>
         </div>
     </div>
@@ -81,6 +83,7 @@
 <div class="container">
         <table class="table">
         <thead>
+                <h5>Product-Details</h5>
       <tr>
         <th>Product-ID</th>
         <th>Product-Name</th>
@@ -122,7 +125,7 @@
                        
                         for(var j=0;j<imgName.length ; j++)
                         {
-                             appendRows+= '<td>'+imgName[j]+'</td>'
+                             appendRows+= '<td><img src="pages/'+imgName[j]+'" style="display: block;max-width: 100px; max-height: 100px;  width: auto; height: auto;"></td>'
                         }    
                         appendRows+= '<td><button name="update" class="btn btn-success" id="update" data-toggle="modal" data-target="#myModal" value="'+result.images[i].id+'">Update</button></td><td><button name="delete" id="delete" class="btn btn-danger" value="'+result.images[i].id+'">Delete</button></td></tr>';
                      }
@@ -132,10 +135,6 @@
                 
             });
             
-          
-
-
-
           
 
         // Full Ajax request
@@ -199,7 +198,6 @@
                 });
 
 
-
                 $(document).on('click', '#update', function()
             { 
                 $.ajaxSetup({
@@ -215,16 +213,56 @@
                             type:'post',
                             url: "{{ url('getRowIDupdate') }}",
                             data:{userid:userid},
+                               
                         success:function(data)
                         {
-                            console.log(data);
+                            var productLength = data.updateData.productDetails.length;
+                            var imageLength = data.updateData.imageDetails.length;
+                            var productUpdateAppend = '';
+                            for( var i = 0;i<productLength ;i++)
+                            {  
+                                productUpdateAppend+='<tr><td>Product_Id</td><td><input type="text" name="product_id" id="product_id" value="'+data.updateData.productDetails[i].id+'" readonly></td></tr><tr><td>Product_Name</td><td><input type="text" name="product_name" id="product_name" value="'+data.updateData.productDetails[i].product_name+'" ></td></tr><tr><td>Product_Price</td><td><input type="text" name="product_price" id="product_price" value="'+data.updateData.productDetails[i].product_price+'" ></td></tr><tr><td>Product_Description</td><td><input type="text" name="product_description" id="product_description" value="'+data.updateData.productDetails[i].product_description+'" ></td></tr><tr>'
+                                 for(var j = 0;j<imageLength ;j++)
+                                 {
+                                    productUpdateAppend+= '<td><img src="pages/'+data.updateData.imageDetails[j].image+'" style="display: block;max-width: 100px; max-height: 100px;  width: auto; height: auto;"></td>';
+                                 }
+                                    productUpdateAppend+='</tr>';
+                            }
+                            
+                                $('#productUpdate').html(productUpdateAppend);
                         }
 
               });
               
                 });
 
+                
+                $(document).on('click', '#updateProduct', function()
+            { 
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                    });
 
+                    
+                    var product_id = $('#product_id').val();
+                    var product_name = $('#product_name').val();
+                    var product_price = $('#product_price').val();
+                    var product_description = $('#product_description').val();
+                    
+                    $.ajax({
+                                type:'post',
+                                url: "{{ url('getDataToUpdate') }}",
+                                data:{product_id:product_id,product_name:product_name,product_price:product_price,product_description:product_description},
+                                success:function(data)
+                                {
+                                    window.location = 'http://localhost:8000';
+                                }
+                    });
+              
+                });
+               
 
 </script>
 

@@ -27,3 +27,4 @@ Route::post('/addmedia', 'Product@createmedia');
 Route::get('/getProduct', 'Product@getProduct');
 Route::post('/getRowID', 'Product@getRowID');
 Route::post('/getRowIDupdate', 'Product@getRowIDupdate');
+Route::post('/getDataToUpdate', 'Product@getDataToUpdate');

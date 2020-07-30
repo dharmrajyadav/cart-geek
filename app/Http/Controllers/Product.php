@@ -40,12 +40,7 @@ class Product extends Controller
             DB::table('images')->insert($postArray);
              }
          }
-            
-            // $images = DB::table('product')
-            // ->leftJoin('images', 'product.id', '=', 'images.product_id')
-            // ->get();
-            // return response()->json(["message" => "Media added successfully.", "images" => $images]);
-     
+                            
     }
   else
   {
@@ -71,8 +66,23 @@ class Product extends Controller
         
         public function getRowIDupdate(Request $request)
         {
-             echo  $row_Id = $request->userid;
-             
+            $row_Id = $request->userid;
+            $updateData['productDetails'] = DB::table('product')->where('id', $row_Id)->get();
+            $updateData['imageDetails'] = DB::table('images')->where('product_id', $row_Id)->get();
+            return response()->json([ "updateData" => $updateData]);
+        }
+        
+        public function getDataToUpdate(Request $request)
+        {
+          $product_id = $request->product_id;
+          $product_name = $request->product_name;
+          $product_price = $request->product_price;
+          $product_description = $request->product_description;
+           $query = DB::table('product')
+              ->where('id', $product_id)  
+              ->limit(1)  
+              ->update(array('product_name' => $product_name,'product_price' => $product_price,'product_description' => $product_description));   
+           
         }
 }
 
